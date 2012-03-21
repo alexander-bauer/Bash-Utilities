@@ -1,0 +1,19 @@
+####  ####  ####
+#Bash-Utilities#
+####  ####  ####
+
+Each of the included scripts adds a simple utility for use in everyday 
+terminal usage. The individual uses for the scripts are in the wiki at 
+http://github.com/SashaCrofter/Bash-Utilities/wiki, and in the comments 
+at the top of the scripts themselves.
+
+To use these scripts, place them (or any subset of them) in a folder 
+included in your system's $PATH directory. When they are in place, do $ 
+chmod +x [script] or $ chmod +x [script0] [script1] to make them usable. 
+To invoke one, simply do $ [script].
+
+LISCENCE: All of the scripts included are under the Creative Commons 
+Attribution Liscense, meaning that you can use and modify these scripts 
+as you like so long as attribution is given to the original source. 
+(Further information is pending.)
+

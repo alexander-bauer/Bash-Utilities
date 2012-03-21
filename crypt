@@ -1,0 +1,101 @@
+#!/bin/bash
+#
+#Info:
+#
+# Take note: this script creates a temporary copy of any input file in the directory /tmp. This is deleted afterward, but if the script is stopped before this delete can take place, an unencrypted version of your data may remain there. If this script exits with code 1, then it is suggested that you run `rm /tmp/crypt_temp_file.*
+#
+#Options:
+#
+# -e (encrypt); encrypts the file given as the second argument with OpenPGP
+# -d (decrypt); decrypts the file given as the second argument with OpenPGP
+# -z (compress); used in combination with -e or -d adds functionality for directories and compresses or decompresses it (.tgz)
+# -r (remove); used in combination with -e or -d to delete the input file after producing the output file
+#
+
+scriptopt -c $1
+useopts=$?
+opte=1
+optd=1
+optz=1
+optr=1
+
+if [[ $useopts == 0 ]]
+then
+	scriptopt -o $1 e
+	opte=$?
+	scriptopt -o $1 d
+	optd=$?
+	scriptopt -o $1 z
+	optz=$?
+	scriptopt -o $1 r
+	optr=$?
+
+	if [ $opte == 0 ]
+	then
+		PUBLIC_KEY=$2
+		INFILE=$3
+		OUTFILE=$4
+	else
+		INFILE=$2
+		OUTFILE=$3
+	fi
+
+else
+	scriptuse $0 0 options,"public-key | inputfile","inputfile | [outputfile]",[outputfile]
+fi
+
+set -e
+
+EXTENSION="dat"
+[ $optz == 0 ] && EXTENSION="tar.gz"
+TEMPORARY_FILE="/tmp/crypt_temp_file.$EXTENSION"
+
+
+if [ $opte == 0 ]
+then
+	if [[ -z $OUTFILE ]]
+	then
+		OUTFILE=$INFILE.dat
+	fi
+
+	if [ $optz == 0 ]
+	then
+		if [[ ! -d $INFILE ]]
+		then
+			mkdir $INFILE
+		fi
+		tar zpcf $TEMPORARY_FILE $INFILE
+	else
+		cp $INFILE $TEMPORARY_FILE
+	fi
+	gpg -r $PUBLIC_KEY --output $OUTFILE --encrypt $TEMPORARY_FILE
+fi
+
+if [ $optd == 0 ]
+then
+	if [[ -z $OUTFILE ]]
+	then
+		OUTFILE=${INFILE%.dat}
+		[ $optz == 0 ] && OUTFILE="./"
+	fi
+
+	gpg --output $TEMPORARY_FILE --decrypt $INFILE
+	
+	if [ $optz == 0 ]
+	then
+		if [ ! -d $OUTFILE ]
+		then
+			mkdir $OUTFILE
+		fi
+		tar zpxf $TEMPORARY_FILE -C $OUTFILE
+	else
+		cp $TEMPORARY_FILE $OUTFILE
+	fi
+fi
+rm $TEMPORARY_FILE
+
+
+if [ $optr == 0 ]
+then
+	rm -r $INFILE
+fi

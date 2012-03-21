@@ -1,0 +1,6 @@
+#!/bin/bash
+# This command will clear the current logged bash history
+# located in ~/.bash_history entirely and nullify the
+# entire contents of that file
+>~/.bash_history
+echo Cleared.

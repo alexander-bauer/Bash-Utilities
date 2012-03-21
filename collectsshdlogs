@@ -1,0 +1,4 @@
+#!/bin/bash
+STRING="sshd\[[0-9][0-9]*\]"
+grep $STRING /var/log/auth.log.1
+grep $STRING /var/log/auth.log
