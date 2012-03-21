@@ -1,0 +1,24 @@
+#!/bin/bash
+# usage: script-usage [name_of_parent_script] [number_of_arguments_passed_to_parent] [usage_arguments_separated_by_commas] [[minimum number of arguments]]
+# script-usage $0 $# argument,[optional_argument] 1
+#
+# MINIMUM ARGUMENTS NOT SUPPORTED YET
+
+PARENT_NAME=$1
+ARGS_PASSED=$2
+ARGS_LISTED=[${3//','/"] ["}]
+
+UPPER_BOUND=$((`echo $3|sed 's/[^,]//g'|wc -m`))
+
+if [[ -z "$4" ]]
+then
+	LOWER_BOUND=$UPPER_BOUND
+else
+	LOWER_BOUND=$4
+fi
+
+if (( "$ARGS_PASSED" < "$LOWER_BOUND" )) || (( "$ARGS_PASSED" > "$UPPER_BOUND" ))
+then
+	echo usage: $PARENT_NAME $ARGS_LISTED
+	exit 1
+fi

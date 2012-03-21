@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+#Info:
+# The exit status of this script corresponds to its return value, which is either 0, true, or 64, false. Because of this, set -e must be placed AFTER this script is run.
+#
+# Options:
+#
+# -c (check); used alone causes scriptopt to return true if
+#options are present in $2
+# -o (option check); causes scriptopt to check if the $3
+#option is present in $2
+# -s (solitary); used in combination with -o to check if the
+#passed option is the only option given in $2
+#
+set -e
+
+OPTIONS=$1
+ARG=$2
+OPTTEST=$3
+
+RETURNVAL=64
+
+optc=1
+opto=1
+opts=1
+
+if [[ ${OPTIONS:0:1} == "-" ]]
+then
+	[ "$OPTIONS" = -c ] && optc=0
+	
+	[[ $OPTIONS = *o* ]] && opto=0
+	[[ $OPTIONS = *s* ]] && [[ $opto == 0 ]] && opts=0
+
+	if [[ $opto == 0 ]]
+	then
+		scriptuse $0 $# options,argument-to-check,"option-to-check-for"
+	else
+		scriptuse $0 $# options,argument-to-check
+	fi
+
+	[ $optc == 0 ] && [[ ${ARG:0:1} = "-" ]] && RETURNVAL=0
+	[ $opto == 0 ] && [[ $ARG = *$OPTTEST* ]] && RETURNVAL=0
+	[ $opts == 0 ] && [[ $ARG = -$OPTTEST ]] && RETURNVAL=0
+else
+	exit 1
+fi
+
+exit $RETURNVAL
